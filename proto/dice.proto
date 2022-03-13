@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "github.com/lbrooks/rpg/proto/dice";
+
+package dice;
+
+message DiceRollRequest {
+  // handles inputs of form:
+  //  2d6 = 2 rolls of a 6-sided die, summed
+  //  5 = just add 5 to the value
+  // Example: 2d4 + 1d20 + 5 => [ 2d4, 1d20, 5 ]
+  repeated string roll = 1;
+}
+
+message DiceRollResponse {
+  optional uint64 total = 1;
+  repeated uint64 roll = 2;
+}
+
+message Dice {
+  uint32 count = 1;
+  uint32 sides = 2;
+}
+
+service DiceRollService {
+  rpc Roll(DiceRollRequest) returns (DiceRollResponse);
+}
+
