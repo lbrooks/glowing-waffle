@@ -23,6 +23,7 @@
 #include <string>
 
 #include <grpcpp/grpcpp.h>
+#include <gflags/gflags.h>
 
 #ifdef BAZEL_BUILD
 #include "proto/dice.grpc.pb.h"
@@ -37,6 +38,8 @@ using grpc::Status;
 using dice::DiceRollRequest;
 using dice::DiceRollResponse;
 using dice::DiceRollService;
+
+DEFINE_string(port, "50051", "Port number for service to run on, default 50051");
 
 // Logic and data behind the server's behavior.
 class DiceRollServiceImpl final : public DiceRollService::Service {
@@ -85,7 +88,7 @@ class DiceRollServiceImpl final : public DiceRollService::Service {
 
 void RunServer() {
   std::string address = "0.0.0.0";
-  std::string port = "50051";
+  std::string port = FLAGS_port;
   std::string server_address = address + ":" + port;
   DiceRollServiceImpl service;
 
@@ -105,6 +108,8 @@ void RunServer() {
 }
 
 int main(int argc, char** argv) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   std::srand(std::time(0));  // Initialize random number generator.
 
   RunServer();

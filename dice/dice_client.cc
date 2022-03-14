@@ -21,6 +21,7 @@
 #include <string>
 
 #include <grpcpp/grpcpp.h>
+#include <gflags/gflags.h>
 
 #ifdef BAZEL_BUILD
 #include "proto/dice.grpc.pb.h"
@@ -35,14 +36,15 @@ using dice::DiceRollService;
 using dice::DiceRollResponse;
 using dice::DiceRollRequest;
 
+DEFINE_string(dice_server, "localhost:50051", "Address for dice_server, default localhost:50051");
+
 class DiceRollClient {
  public:
-  DiceRollClient(std::shared_ptr<Channel> channel)
-      : stub_(DiceRollService::NewStub(channel)) {}
+  DiceRollClient(std::shared_ptr<Channel> channel): stub_(DiceRollService::NewStub(channel)) {}
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
-  long Roll(const std::string& user) {
+  long Roll() {
     // Data we are sending to the server.
     DiceRollRequest request;
     request.add_roll("3d4");
@@ -73,20 +75,18 @@ class DiceRollClient {
 };
 
 int main(int argc, char** argv) {
-  std::string address = "localhost";
-  std::string port = "50051";
-  std::string server_address = address + ":" + port;
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+
+  std::string server_address = FLAGS_dice_server;
   std::cout << "Client querying server address: " << server_address << std::endl;
 
   // Instantiate the client. It requires a channel, out of which the actual RPCs
   // are created. This channel models a connection to an endpoint (in this case,
   // localhost at port 50051). We indicate that the channel isn't authenticated
   // (use of InsecureChannelCredentials()).
-  DiceRollClient client(grpc::CreateChannel(
-      server_address, grpc::InsecureChannelCredentials()));
-  std::string user("world");
+  DiceRollClient client(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
 
-  long reply = client.Roll(user);
+  long reply = client.Roll();
   std::cout << "client received: " << reply << std::endl;
 
   return 0;
