@@ -16,12 +16,12 @@
  *
  */
 
+#include <gflags/gflags.h>
+#include <grpcpp/grpcpp.h>
+
 #include <iostream>
 #include <memory>
 #include <string>
-
-#include <grpcpp/grpcpp.h>
-#include <gflags/gflags.h>
 
 #ifdef BAZEL_BUILD
 #include "proto/dice.grpc.pb.h"
@@ -29,18 +29,23 @@
 #include "proto/dice.grpc.pb.h"
 #endif
 
+using brooks::proto::dice::DiceRollRequest;
+using brooks::proto::dice::DiceRollResponse;
+using brooks::proto::dice::DiceRollService;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
-using dice::DiceRollService;
-using dice::DiceRollResponse;
-using dice::DiceRollRequest;
 
-DEFINE_string(dice_server, "localhost:50051", "Address for dice_server, default localhost:50051");
+DEFINE_string(dice_server, "localhost:50051",
+              "Address for dice_server, default localhost:50051");
+
+namespace brooks {
+namespace dice {
 
 class DiceRollClient {
  public:
-  DiceRollClient(std::shared_ptr<Channel> channel): stub_(DiceRollService::NewStub(channel)) {}
+  DiceRollClient(std::shared_ptr<Channel> channel)
+      : stub_(DiceRollService::NewStub(channel)) {}
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
@@ -74,17 +79,22 @@ class DiceRollClient {
   std::unique_ptr<DiceRollService::Stub> stub_;
 };
 
-int main(int argc, char** argv) {
+}  // namespace dice
+}  // namespace brooks
+
+int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   std::string server_address = FLAGS_dice_server;
-  std::cout << "Client querying server address: " << server_address << std::endl;
+  std::cout << "Client querying server address: " << server_address
+            << std::endl;
 
   // Instantiate the client. It requires a channel, out of which the actual RPCs
   // are created. This channel models a connection to an endpoint (in this case,
   // localhost at port 50051). We indicate that the channel isn't authenticated
   // (use of InsecureChannelCredentials()).
-  DiceRollClient client(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
+  brooks::dice::DiceRollClient client(
+      grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
 
   long reply = client.Roll();
   std::cout << "client received: " << reply << std::endl;

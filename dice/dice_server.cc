@@ -16,14 +16,14 @@
  *
  */
 
-#include <iostream>
-#include <ctime>
+#include <gflags/gflags.h>
+#include <grpcpp/grpcpp.h>
+
 #include <cstdlib>
+#include <ctime>
+#include <iostream>
 #include <memory>
 #include <string>
-
-#include <grpcpp/grpcpp.h>
-#include <gflags/gflags.h>
 
 #ifdef BAZEL_BUILD
 #include "proto/dice.grpc.pb.h"
@@ -31,20 +31,24 @@
 #include "proto/dice.grpc.pb.h"
 #endif
 
+using brooks::proto::dice::DiceRollRequest;
+using brooks::proto::dice::DiceRollResponse;
+using brooks::proto::dice::DiceRollService;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using dice::DiceRollRequest;
-using dice::DiceRollResponse;
-using dice::DiceRollService;
 
-DEFINE_string(port, "50051", "Port number for service to run on, default 50051");
+DEFINE_string(port, "50051",
+              "Port number for service to run on, default 50051");
+
+namespace brooks {
+namespace dice {
 
 // Logic and data behind the server's behavior.
 class DiceRollServiceImpl final : public DiceRollService::Service {
-  Status Roll(ServerContext* context, const DiceRollRequest* request,
-                  DiceRollResponse* reply) override {
+  Status Roll(ServerContext *context, const DiceRollRequest *request,
+              DiceRollResponse *reply) override {
     long res = 0;
 
     std::cout << "Roll: ";
@@ -60,7 +64,7 @@ class DiceRollServiceImpl final : public DiceRollService::Service {
       std::size_t found = d.find("d");
       if (found != std::string::npos) {
         int quantity = std::stoi(d.substr(0, found));
-        int sides = std::stoi(d.substr(found+1));
+        int sides = std::stoi(d.substr(found + 1));
 
         std::cout << "d" << sides << ": [";
 
@@ -106,13 +110,15 @@ void RunServer() {
   // responsible for shutting down the server for this call to ever return.
   server->Wait();
 }
+}  // namespace dice
+}  // namespace brooks
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   std::srand(std::time(0));  // Initialize random number generator.
 
-  RunServer();
+  brooks::dice::RunServer();
 
   return 0;
 }

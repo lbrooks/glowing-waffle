@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "github.com/lbrooks/rpg/proto/dice";
 
-package dice;
+package brooks.proto.dice;
 
 message DiceRollRequest {
   // handles inputs of form:
