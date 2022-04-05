@@ -66,20 +66,11 @@ class DiceRollServiceImpl final : public DiceRollService::Service {
         int quantity = std::stoi(d.substr(0, found));
         int sides = std::stoi(d.substr(found + 1));
 
-        std::cout << "d" << sides << ": [";
-
         for (int r = 0; r < quantity; r++) {
           auto roll = (rand() % sides) + 1;
           res += roll;
           reply->add_roll(roll);
-
-          if (r != 0) {
-            std::cout << ", ";
-          }
-          std::cout << roll;
         }
-
-        std::cout << "]" << std::endl;
       } else {
         res += std::stoi(d);
       }

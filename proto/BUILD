@@ -18,7 +18,6 @@ cc_grpc_library(
     name = "dice_cc_grpc",
     srcs = [":dice_proto"],
     grpc_only = True,
-    deps = [":dice_cc_proto"],
     visibility = ["//visibility:public"],
+    deps = [":dice_cc_proto"],
 )
-
