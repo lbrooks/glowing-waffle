@@ -26,14 +26,14 @@
 #include <string>
 
 #ifdef BAZEL_BUILD
-#include "proto/dice.grpc.pb.h"
+#include "dice/proto/dice.grpc.pb.h"
 #else
-#include "proto/dice.grpc.pb.h"
+#include "dice/proto/dice.grpc.pb.h"
 #endif
 
-using brooks::proto::dice::DiceRollRequest;
-using brooks::proto::dice::DiceRollResponse;
-using brooks::proto::dice::DiceRollService;
+using brooks::dice::proto::DiceRollRequest;
+using brooks::dice::proto::DiceRollResponse;
+using brooks::dice::proto::DiceRollService;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;

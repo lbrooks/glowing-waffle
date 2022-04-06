@@ -1,13 +1,8 @@
 syntax = "proto3";
 
-option go_package = "github.com/lbrooks/rpg/proto/dice";
-
-package brooks.proto.dice;
+package brooks.dice.proto;
 
 message DiceRollRequest {
-  // handles inputs of form:
-  //  2d6 = 2 rolls of a 6-sided die, summed
-  //  5 = just add 5 to the value
   // Example: 2d4 + 1d20 + 5 => [ 2d4, 1d20, 5 ]
   repeated string roll = 1;
 }

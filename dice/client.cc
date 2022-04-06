@@ -5,8 +5,8 @@
 #include "dice_client.h"
 
 using brooks::dice::DiceRollClient;
-using brooks::proto::dice::DiceRollRequest;
-using brooks::proto::dice::DiceRollResponse;
+using brooks::dice::proto::DiceRollRequest;
+using brooks::dice::proto::DiceRollResponse;
 
 DEFINE_string(dice_server, "localhost:50051",
               "Address for dice_server, default localhost:50051");
